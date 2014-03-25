@@ -54,11 +54,16 @@ class Client
      *
      * @param   $endpoint          string   the endpoint for service you want to hit
      * @param   $parameters        array    key -> value set of parameters relevant to the call
-     * @param   $is_token_request  boolean  whether or not you are request a token
      * @return                     json     expanded json class from the request
      */
-    public function request($endpoint, $parameters, $is_token_request = false)
+    public function request($endpoint, $parameters = array())
     {
+        $is_token_request = ($endpoint == self::TOKEN_ENDPOINT);
+        
+        if (empty($this->token) && !$is_token_request) {
+            $this->token = $this->fetchToken();
+        }
+        
         $this->checkRequiredAuthentication($is_token_request);
         
         if ($is_token_request) {
@@ -78,13 +83,25 @@ class Client
     {
         if ($is_token_request) {
             if (empty($this->client) || empty($this->secret)) {
-                throw new Exception('You must define the client and secret before requesting a token!');
+                throw new \Exception('You must define the client and secret before requesting a token!');
             }
         } else {
             if (empty($this->token)) {
-                throw new Exception('You must have a valid token before making a request!');
+                throw new \Exception('You must have a valid token before making a request!');
             }
         }
+    }
+
+    /**
+     * helper method to request an access token
+     * encapsulates request call and response parsing for the token endpoint
+     *
+     * @return  string  access token from Bigstock OAuth2
+     */
+    protected function fetchToken()
+    {
+        $response = $this->request(self::TOKEN_ENDPOINT);
+        // parse response to get to the access token
     }
 
 }
