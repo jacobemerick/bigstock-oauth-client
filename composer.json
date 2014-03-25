@@ -1,0 +1,5 @@
+{
+    "name": "jacobemerick/bigstock-oauth-api",
+    "description": "PHP Client for Bigstock OAuth2 API",
+    "require": {}
+}
