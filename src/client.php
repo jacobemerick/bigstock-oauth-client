@@ -5,6 +5,9 @@ namespace Bigstock\OAuth2API;
 class Client
 {
 
+    const PRODUCTION_URL = '';
+    const DEVELOPMENT_URL = '';
+
     const TOKEN_ENDPOINT = 'token';
 
     protected $client;
@@ -66,11 +69,24 @@ class Client
         
         $this->checkRequiredAuthentication($is_token_request);
         
+        $handle = curl_init();
+        curl_setopt($handle, CURLOPT_URL, $this->fetchURL($endpoint, $parameters));
+        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($handle, CURLOPT_POST, true);
+        
         if ($is_token_request) {
-            // set basic http authentication header
-            // set post body of token request
+            curl_setopt($handle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($handle, CURLOPT_USERPWD, "{$this->client}:{$this->secret}");
+            curl_setopt($handle, CURLOPT_POSTFIELDS, array('grant_type' => 'client_credentials'));
         } else {
-            // set post body with token credentials
+            curl_setopt($handle, CURLOPT_POSTFIELDS, array('access_token' => $this->token));
+        }
+        
+        $response = curl_exec($handle);
+        
+        if ($response === false) {
+            throw new \Exception('Request failed with error ' . curl_error($handle));
         }
     }
 
@@ -102,6 +118,21 @@ class Client
     {
         $response = $this->request(self::TOKEN_ENDPOINT);
         // parse response to get to the access token
+    }
+
+    protected function fetchURL($endpoint, $parameters)
+    {
+        $url = '';
+        $url .= ($this->in_production_mode) ? self::PRODUCTION_URL : self::DEVELOPMENT_URL;
+        $url .= '/';
+        $url .= $endpoint;
+        
+        if (count($parameters) > 0) {
+            $url .= '?';
+            $url .= http_build_query($parameters);
+        }
+        
+        return $url;
     }
 
 }
