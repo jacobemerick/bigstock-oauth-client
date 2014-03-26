@@ -5,8 +5,8 @@ namespace Bigstock\OAuth2API;
 class Client
 {
 
-    const PRODUCTION_URL = '';
-    const DEVELOPMENT_URL = '';
+    const PRODUCTION_URL = 'https://api.bigstockphoto.com/2/oauth2';
+    const DEVELOPMENT_URL = 'https://testapi.bigstockphoto.com/2/oauth2';
 
     const TOKEN_ENDPOINT = 'token';
 
@@ -74,20 +74,30 @@ class Client
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($handle, CURLOPT_POST, true);
-        
+
         if ($is_token_request) {
             curl_setopt($handle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
             curl_setopt($handle, CURLOPT_USERPWD, "{$this->client}:{$this->secret}");
-            curl_setopt($handle, CURLOPT_POSTFIELDS, array('grant_type' => 'client_credentials'));
+
+            $post_fields = array(
+                'grant_type' => 'client_credentials',
+            );
         } else {
-            curl_setopt($handle, CURLOPT_POSTFIELDS, array('access_token' => $this->token));
+            $post_fields = array(
+                'access_token' => $this->token,
+            );
         }
-        
+
+        curl_setopt($handle, CURLOPT_POSTFIELDS, http_build_query($post_fields));
+
         $response = curl_exec($handle);
-        
+        curl_close($handle);
+
         if ($response === false) {
             throw new \Exception('Request failed with error ' . curl_error($handle));
         }
+
+        return json_decode($response);
     }
 
     /**
@@ -117,9 +127,26 @@ class Client
     protected function fetchToken()
     {
         $response = $this->request(self::TOKEN_ENDPOINT);
-        // parse response to get to the access token
+
+        if ($response === null) {
+            throw new \Exception('Invalid response from the API. Cannot fetch token.');
+        } else if (isset($response->error)) {
+            throw new \Exception("There was an error creating a token: {$response->error_description}");
+        } else if (!isset($response->access_token)) {
+            throw new \Exception('Unexpected response from the API. Cannot parse token.');
+        }
+
+        return $response->access_token;
     }
 
+    /**
+     * helper method to construct the full api url
+     * switch for production v development environment, plus builder for query params
+     *
+     * @param   $endpoint    string  api endpoint
+     * @param   $parameters  array   array of parameters for endpoint
+     * @return               string  url endpoint for curl request
+     */
     protected function fetchURL($endpoint, $parameters)
     {
         $url = '';
