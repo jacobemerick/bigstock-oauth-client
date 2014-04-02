@@ -4,7 +4,7 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "Bigstock\\OAuth2API\\" : "src/"
+            "Bigstock\\OAuth2API\\": "src/"
         }
     }
 }
