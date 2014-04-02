@@ -1,5 +1,5 @@
 {
-    "name": "jacobemerick/bigstock-oauth-api",
+    "name": "jacobemerick/bigstock-oauth-client",
     "description": "PHP Client for Bigstock OAuth2 API",
     "require": {},
     "autoload": {
