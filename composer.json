@@ -1,7 +1,6 @@
 {
     "name": "jacobemerick/bigstock-oauth-client",
     "description": "PHP Client for Bigstock OAuth2 API",
-    "require": {},
     "autoload": {
         "psr-4": {
             "Bigstock\\OAuth2API\\": "src/"
