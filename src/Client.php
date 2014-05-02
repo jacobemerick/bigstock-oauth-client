@@ -5,10 +5,10 @@ namespace Bigstock\OAuth2API;
 class Client
 {
 
-    const PRODUCTION_URL = 'https://api.bigstockphoto.com/2/oauth2';
-    const DEVELOPMENT_URL = 'https://testapi.bigstockphoto.com/2/oauth2';
+    protected static PRODUCTION_URL = 'https://api.bigstockphoto.com/2/oauth2';
+    protected static DEVELOPMENT_URL = 'https://testapi.bigstockphoto.com/2/oauth2';
 
-    const TOKEN_ENDPOINT = 'token';
+    protected static TOKEN_ENDPOINT = 'token';
 
     protected $client;
     protected $secret;
