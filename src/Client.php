@@ -5,10 +5,10 @@ namespace Bigstock\OAuth2API;
 class Client
 {
 
-    protected static PRODUCTION_URL = 'https://api.bigstockphoto.com/2/oauth2';
-    protected static DEVELOPMENT_URL = 'https://testapi.bigstockphoto.com/2/oauth2';
+    protected static $PRODUCTION_URL = 'https://api.bigstockphoto.com/2/oauth2';
+    protected static $DEVELOPMENT_URL = 'https://testapi.bigstockphoto.com/2/oauth2';
 
-    protected static TOKEN_ENDPOINT = 'token';
+    protected static $TOKEN_ENDPOINT = 'token';
 
     protected $client;
     protected $secret;
@@ -61,7 +61,7 @@ class Client
      */
     public function request($endpoint, $parameters = array())
     {
-        $is_token_request = ($endpoint == self::TOKEN_ENDPOINT);
+        $is_token_request = ($endpoint == self::$TOKEN_ENDPOINT);
         
         if (empty($this->token) && !$is_token_request) {
             $this->token = $this->fetchToken();
@@ -126,7 +126,7 @@ class Client
      */
     protected function fetchToken()
     {
-        $response = $this->request(self::TOKEN_ENDPOINT);
+        $response = $this->request(self::$TOKEN_ENDPOINT);
 
         if ($response === null) {
             throw new \Exception('Invalid response from the API. Cannot fetch token.');
@@ -150,7 +150,7 @@ class Client
     protected function fetchURL($endpoint, $parameters)
     {
         $url = '';
-        $url .= ($this->in_production_mode) ? self::PRODUCTION_URL : self::DEVELOPMENT_URL;
+        $url .= ($this->in_production_mode) ? self::$PRODUCTION_URL : self::$DEVELOPMENT_URL;
         $url .= '/';
         $url .= $endpoint;
         
