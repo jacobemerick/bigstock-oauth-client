@@ -22,7 +22,7 @@ class Client
      *
      * @param  $in_production_mode  whether or not the client should hit production servers
      */
-    public function _construct($in_production_mode = true)
+    public function __construct($in_production_mode = true)
     {
         $this->in_production_mode = $in_production_mode;
     }
