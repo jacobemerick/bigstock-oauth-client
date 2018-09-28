@@ -1,9 +1,10 @@
 {
-    "name": "jacobemerick/bigstock-oauth-client",
+    "name": "shutterstock/bigstock-php-oauth-client",
     "description": "PHP Client for Bigstock OAuth2 API",
     "autoload": {
         "psr-4": {
             "Bigstock\\OAuth2API\\": "src/"
         }
-    }
+    },
+    "license": "MIT"
 }
